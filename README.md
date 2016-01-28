@@ -1,12 +1,10 @@
 # VBA-Logger
 
-Origin - http://www.bolterauer.de/consulting/dev/vbatools/vba_logging/VBALogging.html
+Origin - [http://www.bolterauer.de/consulting/dev/vbatools/vba_logging/VBALogging.html]
+
 Author - Christian Bolterauer - csinfo@bolterauer.de
 
-
-Logging for VBA
-
-Contents
+##Contents
 
 Introduction
 Examples
@@ -14,7 +12,8 @@ Download source files
 Setting Log Levels
 Installing the Logging Framework
 Running the Unit Tests
-Introduction
+
+##Introduction
 
 This VBA Logging framework is especially designed for VBA Applications. It provides feature specific to VBA development that include:
 
@@ -24,43 +23,46 @@ logging to a Logbuffer - with the option to create a Trace file of the Log
 full Log4VBA style logging.
 Different to logging frameworks like log4J it is not necessary to instantiate a 'Logger' Object prior to log a message: A simple procedure call is sufficient. If preferred the VBA Logging Framework also provides the sophisticated approach creating a Logger Object instance with the class name (comparable to log4J). Both approaches can be combined. Please refer to the Examples and the Unit Tests for more details.
 
-Download source files:
-
-Logging.bas
-Logger.cls
-Logbuffer.cls
-Unit Tests (Optional)
-Download as XLA library:
-Logging.xla
-Examples:
+##Examples:
 
 Replacing Debug.Print
 
 After installing the Logging Module "Debug.Print" statements can be replaced as:
 
- instead
-   Debug.Print txt
- use
-   Logging.log (txt)
-  
+> instead of
+>
+>   `Debug.Print txt`
+>
+>use
+>
+>   `Logging.log(txt)`
+
+
 Note: It is not necessary to initialize a Logger! The Resulting 'printout' will be the same as Debug.Print but with the option to log to a file or the Logbuffer. 
 
 A more usefull Logging statement is a call like
 
-  Logging.logINFO ("myinfotxt..")
-  
+  `Logging.logINFO ("myinfotxt..")`
+
 or adding Logpoint Information
- 
-  Logging.logINFO "This is my message ..", "MySubOrFunction" 
-  
+
+
+  `Logging.logINFO "This is my message ..", "MySubOrFunction"`
+
 wich will give a result like
-  (28.08.2008 10:53:20) INFO:  myinfotxt..
-  (28.08.2008 10:53:20)[MySubOrFunction]-INFO:  This is my message ..
- 
+
+
+>  (28.08.2008 10:53:20) INFO:  myinfotxt..
+>  (28.08.2008 10:53:20)[MySubOrFunction]-INFO:  This is my message ..
+
+
 These messiges will be logged only if 'LOG_LEVEL = INFO' or finer.
-Log4VBA style logging:
 
+---
 
+##Log4VBA style logging:
+
+```VBA
  Dim myLogger As Object 'globally define
 
  ' initialize Logger and set Module Name for example 'VBALogger'
@@ -74,57 +76,63 @@ Log4VBA style logging:
 
  Result:
  (28.08.2008 10:53:20)[VBALogger::MySubOrFunction]-INFO:  This is my message ..
-
-Setting Log Levels:
+```
+---
+###Setting Log Levels:
 Log Levels can be set at startup time using vba_log.properties : The properties file must be located in the same directory as the VBA Module containing the LOGGER Class (and the Logging Module). When the Logger Class is initialized it will look for settings in the 'vba_log.properties' file. Here an Example:
 
-#
-# -- settings for VBA logging --
-#
-# LOG_LEVEL:
-#
-#  DISABLED
-#  BASIC 'like Debug.Print
-#  FATAL
-#  WARN
-#  INFO
-#  FINE
-#  FINER
-#  FINEST
-#  ALL
-#
-LOG_LEVEL = info
-LOG_TO_CONSOLE = True
-LOG_TO_BUFFER = True
-LOG_TO_FILE = True
-#  Default LOG_FILE_PATH is the same place as VBA project file containing the Logger Modul
-#LOG_FILE_PATH=C:\vba_logger.log
-#
+
+> -- settings for VBA logging --
+>
+> LOG_LEVEL:
+>
+>  DISABLED
+>  BASIC 'like Debug.Print
+>  FATAL
+>  WARN
+>  INFO
+>  FINE
+>  FINER
+>  FINEST
+>  ALL
+>
+>LOG_LEVEL = info
+>LOG_TO_CONSOLE = True
+>LOG_TO_BUFFER = True
+>LOG_TO_FILE = True
+>  Default LOG_FILE_PATH is the same place as VBA project file containing the Logger Modul
+>LOG_FILE_PATH=C:\vba_logger.log
+>
 		
 Log Levels can also be set or changed inside VBA code using the method:
 		
- Call Logging.setLoggigParams(Logging.lgBASIC, True, True, False)
+ `Call Logging.setLoggigParams(Logging.lgBASIC, True, True, False)`
 		
 
-Installing the Logging Framework
+##Installing the Logging Framework
 
 There are two options installing the VBA Logging Framework:
 Importing the source moduls into your VBA Projects
 Installation as a xla library
-Importing the source moduls
+
+###Importing the source modules
 
 Use your VBA IDE (e.g. Excel (or Word) ->Macros->'Visual Basic Editor') select your VBA Project and use 'Import file..' to import the src files into your project:
-Logging.bas
-Logger.cls
-Logbuffer.cls
-Unit Tests (Optional)
+
+>Logging.bas
+>Logger.cls
+>Logbuffer.cls
+>Unit Tests (Optional)
+
 I personally recomend to import the modul files directly into your project. Importing the modules does not create any dependancies and your project is 'redistributable'.
-Installation as a XLA library
+
+###Installation as a XLA library
 
 To install the 'Logging.xla', copy Logging.xla into the MS Office Macros directory** (e.g. 'C:\Programme\Microsoft Office\Office\Makro') Note that you have to create a Reference to the 'Logging.xla' file to call the Logger from your VBA Project. 
 
 To add a Reference to a libray you ususally need to run a method like the following example:
-		 
+
+```VBA		 
 Public Sub addLoggerReference()
   
   On Error GoTo Errhandler:
@@ -145,25 +153,26 @@ Public Sub addLoggerReference()
 Errhandler:
    Debug.Print Err.Description
 End Sub
-		 
+```	 
 	        
 Your only have to run adding reference code once for your VBA Project: The VBA Project will remember the reference.
-**The exact location is dependent on your Office Version and MS Windows Enviroment.
+_**The exact location is dependent on your Office Version and MS Windows Enviroment._
 
 
-Running the Unit Tests
+##Running the Unit Tests
 
 To run the Unit Test:
-Import TestLogging.bas
-Run the test calling the Macro 'Test'
+>Import TestLogging.bas
+>Run the test calling the Macro 'Test'
 
-Disclaimer:
+##Disclaimer:
 
 The following development tool is free to use and change 'As Is' with no guarantee from the author(s). The tools come directly from our own development, so they my not fit 100% but hopefully provide a basis to build on. 
  
 
 
-TestLogging.bas:
+###TestLogging.bas:
+```VBA
 Attribute VB_Name = "TestLogging"
 '''
 ''' Basic test macro to test Logger Class using Logging
@@ -269,10 +278,11 @@ End Sub
 Sub MySubOrFunction()
   myLogger.logINFO "This is my message ..", "MySubOrFunction"               ' log a message in Sub 'MySubOrFunction'
 End Sub
-
+```
 	      
 	        
-Logging.bas:
+###Logging.bas:
+```VBA
 Attribute VB_Name = "Logging"
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ''' Contents:   Logging Modul for VBA - uses 'LOGGER' Class
@@ -454,8 +464,10 @@ Public Static Function getNewLogger(sModulName As String) As Logger
 
     Set getNewLogger = myLogger
 End Function
-		
-Logger.cls:
+```
+
+###Logger.cls:
+```VBA
 VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
@@ -892,9 +904,10 @@ Function valIsTrue(boolval As String) As Boolean
     End If
     valIsTrue = False
 End Function
-
+```
 		
-Logbuffer.cls:
+###Logbuffer.cls:
+```VBA
 rel=
 
 VERSION 1.0 CLASS
@@ -963,3 +976,4 @@ Errhandler:
     Debug.Print "Error writing to Tracefile: " & myfilePath & " " & Err.Number & " " & Err.Description
 
 End Sub
+```
