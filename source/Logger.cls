@@ -22,7 +22,6 @@ Option Explicit
 ''' 28/08/08        Christian Bolterauer    Created
 '''
 
-Public cLogbuffer As Logbuffer
 
 Public iLogLevel As Integer
 Public bUseLogPrefix As Boolean
@@ -33,6 +32,7 @@ Public LogFilePath As String
 Public TraceFilePath As String
 Public bDelLogFileAtSetup As Boolean
 Public PropsFileName As String
+Public strLogbuffer As String
 
 'ModulName
 Public ModulName As String
@@ -63,7 +63,6 @@ Const DEFAULT_PROPSFILE_NAME = "vba_log.properties"
 Private Sub Class_Initialize()
    On Error GoTo Errhandler:
    Dim localpath As String
-   Set cLogbuffer = New Logbuffer
    bUseLogPrefix = True
    bDelLogFileAtSetup = True
    
@@ -92,7 +91,7 @@ Errhandler:
 End Sub
 
 'set logging parameters
-Public Sub setLoggigParams(level As Integer, toConsole As Boolean, toBuffer As Boolean, toLogFile As Boolean, Optional deleteExistingLogFile)
+Public Sub setLoggigParams(level As LogLEVEL, toConsole As Boolean, toBuffer As Boolean, toLogFile As Boolean, Optional deleteExistingLogFile)
      Dim delLogfile As Boolean
      
      iLogLevel = level
@@ -156,7 +155,7 @@ Private Sub WriteLog(sLogText, level As LogLEVEL, slogpoint As String)
   ' write to console
   If Me.bConsole Then Debug.Print (LogMessage)
   ' write to Buffer
-  If Me.bBuffer Then cLogbuffer.addline (LogMessage)
+  If Me.bBuffer Then addline (LogMessage)
   ' write to file
   If Me.bToLogFile Then writeToLogFile (LogMessage)
 
@@ -247,6 +246,8 @@ End Sub
 Public Sub writeLogBufferToTraceFile(Optional myfilePath As String)
     On Error GoTo Errhandler:
     Dim mytracefile As String
+    Dim lines() As String
+    Dim line As Variant
     
     If Len(myfilePath) = 0 Then
         mytracefile = Me.TraceFilePath
@@ -258,7 +259,20 @@ Public Sub writeLogBufferToTraceFile(Optional myfilePath As String)
        Exit Sub
     End If
     'write to trace file
-    Me.cLogbuffer.writeLogBufferToTraceFile (mytracefile)
+    
+    If Len(myfilePath) = 0 Then
+       Debug.Print "Error: Trace file path is empty."
+       Exit Sub
+    End If
+       
+    Dim FileNum As Integer
+    FileNum = FreeFile ' next file number
+    Open myfilePath For Output As #FileNum ' creates the file if it doesn't exist
+    lines = VBA.Split(Me.strLogbuffer, VBA.vbLf)
+    For Each line In lines
+       Print #FileNum, line ' write Logbuffer to text file
+    Next line
+    Close #FileNum ' close the file
 Exit Sub
 
 Errhandler:
@@ -377,7 +391,7 @@ Private Sub setLogLevel(level As String)
 End Sub
 
 Public Function getLogBuffer() As String
-   getLogBuffer = cLogbuffer.strLogbuffer
+   getLogBuffer = strLogbuffer
 End Function
 
 
@@ -434,3 +448,11 @@ Function valIsTrue(boolval As String) As Boolean
     End If
     valIsTrue = False
 End Function
+
+Public Sub addline(logmsg As String)
+   If (Len(strLogbuffer) > 0) Then
+     strLogbuffer = strLogbuffer & vbLf & logmsg
+   Else
+     strLogbuffer = logmsg  'avoid empty line when strLogbuffer=""
+   End If
+End Sub
