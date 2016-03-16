@@ -124,18 +124,18 @@ End Sub
 
 Private Sub WriteLog(sLogText, level As LogLEVEL, slogpoint As String)
 
-        Dim LogMessage As String
-        Dim sDateTime As String
-        Dim sLogPrefix As String
-
-  LogMessage = getLogPrefix(level, slogpoint) & sLogText
-
-        ' write to console
-        If Me.bConsole Then Debug.Print (LogMessage)
-        ' write to Buffer
-        If Me.bBuffer Then addline (LogMessage)
-        ' write to file
-        If Me.bToLogFile Then writeToLogFile (LogMessage)
+    Dim LogMessage As String
+    Dim sDateTime As String
+    Dim sLogPrefix As String
+    
+    LogMessage = getLogPrefix(level, slogpoint) & sLogText
+    
+    ' write to console
+    If Me.bConsole Then Debug.Print (LogMessage)
+    ' write to Buffer
+    If Me.bBuffer Then addline (LogMessage)
+    ' write to file
+    If Me.bToLogFile Then writeToLogFile (LogMessage)
 
 End Sub
 
@@ -203,21 +203,21 @@ Private Function getLogPrefix(level As LogLEVEL, logpoint As String)
 End Function
 
 Private Sub writeToLogFile(logmsg As String)
-        On Error GoTo Errhandler:
-        If Len(Me.LogFilePath) = 0 Then
-           Debug.Print "Error: Log file path is empty."
-           Exit Sub
-        End If
-
-        Dim FileNum As Integer
-        FileNum = FreeFile ' next file number
-        Open Me.LogFilePath For Append As #FileNum ' creates the file if it doesn't exist
-        Print #FileNum, logmsg ' write information at the end of the text file
-        Close #FileNum ' close the file
+    Dim fileNum As Integer
+    On Error GoTo Errhandler:
+    If Len(Me.LogFilePath) = 0 Then
+       Debug.Print "Error: Log file path is empty."
+       Exit Sub
+    End If
+    
+    fileNum = FreeFile ' next file number
+    Open Me.LogFilePath For Append As #fileNum ' creates the file if it doesn't exist
+    Print #fileNum, logmsg ' write information at the end of the text file
+    Close #fileNum ' close the file
 Exit Sub
 
 Errhandler:
-        Debug.Print "Error writing to Logfile: " & Me.LogFilePath & " " & Err.Number & " " & Err.Description
+    Debug.Print "Error writing to Logfile: " & Me.LogFilePath & " " & Err.Number & " " & Err.Description
 
 End Sub
 
@@ -243,14 +243,14 @@ Public Sub writeLogBufferToTraceFile(Optional myfilePath As String)
            Exit Sub
         End If
 
-        Dim FileNum As Integer
-        FileNum = FreeFile ' next file number
-        Open myfilePath For Output As #FileNum ' creates the file if it doesn't exist
+        Dim fileNum As Integer
+        fileNum = FreeFile ' next file number
+        Open myfilePath For Output As #fileNum ' creates the file if it doesn't exist
         lines = VBA.Split(Me.strLogbuffer, VBA.vbLf)
         For Each line In lines
-           Print #FileNum, line ' write Logbuffer to text file
+           Print #fileNum, line ' write Logbuffer to text file
         Next line
-        Close #FileNum ' close the file
+        Close #fileNum ' close the file
 Exit Sub
 
 Errhandler:
@@ -258,16 +258,19 @@ Errhandler:
 End Sub
 
 Private Sub readPropertiesFile(path As String)
-
+        
         On Error GoTo Errhandler:
         Dim txtline As String
         Dim para() As String
         Dim mymsg As String
-
+        Dim fileNum As Integer
+        
+        fileNum = FreeFile
+        
         If Len(path) = 0 Then GoTo Errhandler
-        Open path For Input As #1       ' open file
-        Do While Not EOF(1)               ' Loop until end of file
-          Line Input #1, txtline         ' read line
+        Open path For Input As #fileNum       ' open file
+        Do While Not EOF(fileNum)               ' Loop until end of file
+          Line Input #fileNum, txtline         ' read line
 
           'Debug.Print txtline 'test
           para = readParameter(txtline)
@@ -286,7 +289,7 @@ Private Sub readPropertiesFile(path As String)
                 Me.LogFilePath = para(1)
           End If
         Loop
-        Close #1
+        Close #fileNum
         'show settings
         mymsg = "Logging with logLevel=" & getLogLevelName(iLogLevel) & " toConsole=" & bConsole & " toBuffer=" & bBuffer & " toLogFile=" & bToLogFile
         Call log(mymsg, LogLEVEL.BASIC)
