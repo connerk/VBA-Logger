@@ -219,36 +219,32 @@ Errhandler:
 
 End Sub
 
-Public Sub writeLogBufferToTraceFile(Optional myfilePath As String)
-        On Error GoTo Errhandler:
-        Dim mytracefile As String
-        Dim lines() As String
-        Dim line As Variant
+Public Sub writeLogBuffer(Optional myfilePath As String)
+    On Error GoTo Errhandler:
+    Dim mytracefile As String
+    Dim lines() As String
+    Dim line As Variant
 
-        If Len(myfilePath) = 0 Then
-                mytracefile = Me.TraceFilePath
-        Else
-                mytracefile = myfilePath
-        End If
-        If Len(mytracefile) = 0 Then
-           Me.log "Error: Trace file path is empty.", FATAL
-           Exit Sub
-        End If
-        'write to trace file
-
-        If Len(myfilePath) = 0 Then
-           Debug.Print "Error: Trace file path is empty."
-           Exit Sub
-        End If
-
-        Dim fileNum As Integer
-        fileNum = FreeFile ' next file number
-        Open myfilePath For Output As #fileNum ' creates the file if it doesn't exist
-        lines = VBA.Split(Me.strLogbuffer, VBA.vbLf)
-        For Each line In lines
-           Print #fileNum, line ' write Logbuffer to text file
-        Next line
-        Close #fileNum ' close the file
+    If Len(myfilePath) > 0 Then
+        mytracefile = myfilePath
+    ElseIf Len(Me.TraceFilePath) > 0 Then
+        mytracefile = Me.TraceFilePath
+    ElseIf Len(Me.LogFilePath) > 0 Then
+        mytracefile = Me.LogFilePath
+    Else
+        Me.log "Error: Trace file path is empty.", FATAL
+        Exit Sub
+    End If
+    
+    'write to trace file
+    Dim fileNum As Integer
+    fileNum = FreeFile ' next file number
+    Open mytracefile For Append As #fileNum ' creates the file if it doesn't exist
+    lines = VBA.Split(Me.strLogbuffer, VBA.vbLf)
+    For Each line In lines
+       Print #fileNum, line ' write Logbuffer to text file
+    Next line
+    Close #fileNum ' close the file
 Exit Sub
 
 Errhandler:
