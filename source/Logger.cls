@@ -125,8 +125,6 @@ End Sub
 Private Sub WriteLog(sLogText, level As LogLEVEL, slogpoint As String)
 
     Dim LogMessage As String
-    Dim sDateTime As String
-    Dim sLogPrefix As String
     
     LogMessage = getLogPrefix(level, slogpoint) & sLogText
     
@@ -382,7 +380,6 @@ End Function
 '-- extract full path of parent folder of file mypath
 Public Function getParentFolder(mypath As String) As String
   Dim pos As Integer
-  Dim fullpath As String
 
   pos = InStrRev(mypath, "\")
   If (pos <> 0) Then
